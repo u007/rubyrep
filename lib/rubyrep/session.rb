@@ -127,7 +127,7 @@ module RR
         begin
           # $stderr.puts "testing database"
           if send(database) && send(database).select_one("select 1+1 as x")['x'].to_i == 2
-            $stderr.puts "database reachable!"
+            # $stderr.puts "database reachable!"
             unreachable = false # database is actually reachable
           end
         end rescue nil
@@ -167,7 +167,7 @@ module RR
     # * +options+: A options hash with the following settings
     #   * :+forced+: if +true+, always establish a new database connection
     def refresh_database_connection(database, options)
-      $stderr.puts "refresh_database_connection"
+      # $stderr.puts "refresh_database_connection"
       if options[:forced] or database_unreachable?(database)
         # step 1: disconnect both database connection (if still possible)
         begin

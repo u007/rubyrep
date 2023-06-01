@@ -9,6 +9,7 @@ module RR
       # * +trigger_var+: should be either 'NEW' or 'OLD'
       # * +params+: the parameter hash as described in #create_rep_trigger
       def key_clause(trigger_var, params)
+        # $stderr.puts "key_clause: #{trigger_var}: #{params.inspect}"
         params[:keys].
           map { |key| "'#{key}#{params[:key_sep]}' || #{trigger_var}.#{quote_column_name(key)}"}.
           join(" || '#{params[:key_sep]}' || ")
@@ -155,6 +156,7 @@ module RR
             :value => row['last_value'].to_i
           }
         end
+        $stderr.puts "sequence_values: #{table_name}: #{result.inspect}"
         result
       end
 
@@ -185,6 +187,7 @@ module RR
               [left_current_value[:value], right_sequence_values[sequence_name][:value]].max +
               adjustment_buffer
             new_start = max_current_value - (max_current_value % increment) + increment + offset
+            $stderr.puts "alter sequence "#{sequence_name}" increment by #{increment} restart with #{new_start}"
             execute(<<-end_sql)
             alter sequence "#{sequence_name}" increment by #{increment} restart with #{new_start}
             end_sql
@@ -208,6 +211,7 @@ module RR
             (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         end_sql
         sequence_names.each do |sequence_name|
+          $stderr.puts "reset excluded: alter sequence #{sequence_name} increment by 1"
           execute(<<-end_sql)
               alter sequence "#{sequence_name}" increment by 1
           end_sql

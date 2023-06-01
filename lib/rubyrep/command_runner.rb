@@ -108,7 +108,7 @@ EOS
           end
         end
       rescue Exception => e
-        $stderr.puts "Exception caught: #{e}"
+        $stderr.puts "Exception-run caught: #{e}, #{e.backtrace}"
         $stderr.puts e.backtrace if options && options[:verbose]
         status = 1
       end
