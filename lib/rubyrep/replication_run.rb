@@ -83,11 +83,13 @@ module RR
             diff = load_difference
             break unless diff.loaded?
             break if sweeper.terminated?
+            # $stderr.puts "Replicating diff: #{diff.type} filtered? #{event_filtered?(diff)}"
             if diff.type != :no_diff and not event_filtered?(diff)
-              res = replicator.replicate_difference difference
-              $std.err.puts "Synced: #{res.inserted+res.updated+res.deleted} #{res.inspect}"# if session.configuration.options[:verbose]
+              res = replicator.replicate_difference diff
+              $stderr.puts "Synced: #{res.inspect}"# if session.configuration.options[:verbose]
             end
           rescue Exception => e
+            $stderr.puts "Exception: #{e.message}, #{e.backtrace.inspect}"
             if e.message =~ /violates foreign key constraint|foreign key constraint fails/i and !diff.second_chance?
               # Note:
               # Identifying the foreign key constraint violation via regular expression is

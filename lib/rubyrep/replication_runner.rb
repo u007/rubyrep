@@ -158,7 +158,7 @@ EOS
             $stderr.puts e.backtrace.map {|line| line.gsub(/^/, "#{' ' * now.length} ")}
           end
         end
-        $stderr.puts "Stopping replication for next #{session.configuration.options[:replication_interval]} seconds"
+        # $stderr.puts "Stopping replication for next #{session.configuration.options[:replication_interval]} seconds"
         pause_replication
         replication_run_finished
       end
