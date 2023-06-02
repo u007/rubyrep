@@ -312,26 +312,36 @@ module RR
       # * :+remaining_attempts+: how many more times a replication will be attempted
       # * :+previous_failure_description+: why the previous replication attempt failed
       def replicate_difference(diff, remaining_attempts = MAX_REPLICATION_ATTEMPTS, previous_failure_description = nil)
+        inserted = 0
+        updated = 0
+        deleted = 0
+        # $stderr.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{}"
         raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0
+        # $stderr.puts "Replicating2 #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
         options = rep_helper.options_for_table(diff.changes[:left].table)
         if diff.type == :left or diff.type == :right
           key = diff.type == :left ? :left_change_handling : :right_change_handling
           option = options[key]
-
+          # $stderr.puts "Data #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{option}"
           if option == :ignore
+            $stderr.puts "Ignoring #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
             log_replication_outcome :ignore, diff
           elsif option == :replicate
             source_db = diff.type
 
             change = diff.changes[source_db]
+            $stderr.puts "Pushing #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
 
             case change.type
             when :insert
               attempt_insert source_db, diff, remaining_attempts, change.key
+              inserted += 1
             when :update
               attempt_update source_db, diff, remaining_attempts, change.new_key, change.key
+              updated += 1
             when :delete
               attempt_delete source_db, diff, remaining_attempts, change.key
+              deleted += 1
             end
           else # option must be a Proc
             option.call rep_helper, diff
@@ -354,6 +364,8 @@ module RR
             option.call rep_helper, diff
           end
         end
+
+        return { "inserted" => inserted, "updated" => updated, "deleted" => deleted }
       end
       
     end

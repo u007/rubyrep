@@ -116,11 +116,14 @@ EOS
 
     # Executes a single replication run
     def execute_once
+      $stderr.puts "Starting replication run"
+      starting = Time.new
       session.refresh
       timeout = session.configuration.options[:database_connection_timeout]
       terminated = TaskSweeper.timeout(timeout) do |sweeper|
         run = ReplicationRun.new session, sweeper
         run.run
+        $stderr.puts "Replication finished #{Time.new - starting}s"
       end.terminated?
       raise "replication run timed out" if terminated
     rescue Exception => e
@@ -139,9 +142,11 @@ EOS
     # Executes an endless loop of replication runs
     def execute
       init_waiter
+      $stderr.puts "Preparing replication"
       prepare_replication
+      $stderr.puts "Replication preparation finished"
       replication_preparation_finished
-
+      $stderr.puts "Starting replication loop"
       until termination_requested do
         begin
           execute_once
@@ -153,6 +158,7 @@ EOS
             $stderr.puts e.backtrace.map {|line| line.gsub(/^/, "#{' ' * now.length} ")}
           end
         end
+        $stderr.puts "Stopping replication for next #{session.configuration.options[:replication_interval]} seconds"
         pause_replication
         replication_run_finished
       end

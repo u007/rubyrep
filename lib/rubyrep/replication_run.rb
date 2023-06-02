@@ -68,25 +68,24 @@ module RR
           ) != nil
         end
         t.join session.configuration.options[:database_connection_timeout]
+        $stderr.puts "changes_pending? #{changes_pending}"
         changes_pending
       end
-
       # Apparently sometimes above check for changes takes already so long, that
       # the replication run times out.
       # Check for this and if timed out, return (silently).
       return if sweeper.terminated?
-
       success = false
       begin
         replicator # ensure that replicator is created and has chance to validate settings
-
         loop do
           begin
             diff = load_difference
             break unless diff.loaded?
             break if sweeper.terminated?
             if diff.type != :no_diff and not event_filtered?(diff)
-              replicator.replicate_difference diff
+              res = replicator.replicate_difference difference
+              $std.err.puts "Synced: #{res.inserted+res.updated+res.deleted} #{res.inspect}"# if session.configuration.options[:verbose]
             end
           rescue Exception => e
             if e.message =~ /violates foreign key constraint|foreign key constraint fails/i and !diff.second_chance?
