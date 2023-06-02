@@ -6,6 +6,46 @@ Development of an open-source solution for asynchronous, master-master replicati
 * ridiculously easy to use
 * database independent
 
+== CONFIGURATION:
+
+```rubyrep.conf
+RR::Initializer::run do |config|
+  config.left = {
+    :adapter  => 'postgresql', # or 'mysql'
+    :database => 'db1',
+    :username => 'postgres',
+    :password => '',
+    :host     => 'db',
+    :schema_search_path => 'public'
+  }
+
+  config.right = {
+    :adapter  => 'postgresql',
+    :database => 'db1',
+    :username => 'postgres',
+    :password => '',
+    :host     => 'db2',
+    :schema_search_path => 'public'
+  }
+
+  config.options[:sequence_adjustment_buffer] = 2
+  config.options[:sequence_increment] = 10
+  config.options[:scan_progress_printer] = :scan_progress_printers
+  config.options[:database_connection_timeout] = 10
+  config.options[:sync_conflict_handling] = :left_wins
+  config.options[:replication_conflict_handling] = :left_wins
+  config.options[:replication_interval] = 5
+  # config.add_table_options 'emp', 
+  #   :sync_conflict_handling => :left_wins,
+  #   :replication_conflict_handling => :left_wins
+  config.include_tables /./ # all tables
+
+  # ------ exclude tables ------
+  config.exclude_tables 'dontsynctable'
+end
+
+```
+
 
 == MORE INFORMATION:
 
