@@ -190,7 +190,7 @@ module RR
               [left_current_value[:value], right_sequence_values[sequence_name][:value]].max +
               adjustment_buffer
             new_start = max_current_value - (max_current_value % increment) + increment + offset
-            $stderr.puts "alter sequence "#{sequence_name}" increment by #{increment} restart with #{new_start}"
+            $stderr.puts "alter sequence #{sequence_name} increment by #{increment} restart with #{new_start}"
             execute(<<-end_sql)
             alter sequence "#{sequence_name}" increment by #{increment} restart with #{new_start}
             end_sql
