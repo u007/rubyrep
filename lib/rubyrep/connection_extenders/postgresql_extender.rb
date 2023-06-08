@@ -66,6 +66,7 @@ module RR
           WHERE cons.contype = 'p' AND rel.relname = '#{table}' AND rel.relnamespace IN
             (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         end_sql
+        $stderr.puts "column_ids: #{table}'.#{column_ids.inspect} results: #{rows.inspect}"
         sorted_columns = []
         if not rows.nil?
           rows.each() {|r| columns[r['attnum'].to_i] = r['attname']}
