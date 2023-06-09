@@ -322,6 +322,10 @@ module RR
       end
 
       puts "Starting replication"
+
+      # TODO set this on extender
+      session.send(:left).execute "SET FOREIGN_KEY_CHECKS=0"
+      session.send(:right).execute "SET FOREIGN_KEY_CHECKS=0"
     end
   end
 
