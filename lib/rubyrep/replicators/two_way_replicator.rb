@@ -320,7 +320,8 @@ module RR
         inserted = 0
         updated = 0
         deleted = 0
-        raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0 ||previous_failure_description.include?("ForeignKeyViolation")
+        previous_error_has_description = !previous_failure_description.nil?
+        raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0 || (previous_error_has_description && previous_failure_description.include?("ForeignKeyViolation"))
         # $stdout.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' last Error: #{previous_failure_description}"
         # $stdout.puts "Replicating2 #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
         options = rep_helper.options_for_table(diff.changes[:left].table)
