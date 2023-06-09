@@ -44,6 +44,12 @@ module RR
       end
       private :key_clause
 
+      def disable_foreign_keys_check
+        execute(<<-end_sql)
+          SET foreign_key_checks = 0
+        end_sql
+      end
+
       # Creates a trigger to log all changes for the given table.
       # +params+ is a hash with all necessary information:
       # * :+trigger_name+: name of the trigger

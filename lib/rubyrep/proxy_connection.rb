@@ -374,6 +374,7 @@ module RR
     # Returns an SQL insert query for the given +table+ and +values+.
     # +values+ is a hash of column_name => value pairs.
     def table_insert_query(table, values)
+      $stdout.puts "proxy: table_insert_query: #{table}, #{values.inspect}"
       query = "insert into #{quote_table_name(table)}"
       query << '(' << values.keys.map do |column_name|
         quote_column_name(column_name)
@@ -387,6 +388,7 @@ module RR
     # Inserts the specified records into the named +table+.
     # +values+ is a hash of column_name => value pairs.
     def insert_record(table, values)
+      # execute "SET CONSTRAINTS ALL DEFERRED"
       execute table_insert_query(table, values)
     end
     

@@ -91,6 +91,11 @@ module RR
 
       end
 
+      def disable_foreign_keys_check
+        execute(<<-end_sql)
+          SET CONSTRAINTS ALL DEFERRED
+        end_sql
+      end
       # Creates a trigger to log all changes for the given table.
       # +params+ is a hash with all necessary information:
       # * :+trigger_name+: name of the trigger
@@ -102,6 +107,7 @@ module RR
       # * :+exclude_rr_activity+:
       #   if true, the trigger will check and filter out changes initiated by RubyRep
       def create_replication_trigger(params)
+        $stdout.puts "create_replication_trigger: #{params[:trigger_name]}"
         create_or_replace_replication_trigger_function params
 
         execute(<<-end_sql)
