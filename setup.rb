@@ -537,7 +537,7 @@ module FileOperations
 
   def mkdir_p(dirname, prefix = nil)
     dirname = prefix + File.expand_path(dirname) if prefix
-    $stderr.puts "mkdir -p #{dirname}" if verbose?
+    $stdout.puts "mkdir -p #{dirname}" if verbose?
     return if no_harm?
 
     # Does not check '/', it's too abnormal.
@@ -553,13 +553,13 @@ module FileOperations
   end
 
   def rm_f(path)
-    $stderr.puts "rm -f #{path}" if verbose?
+    $stdout.puts "rm -f #{path}" if verbose?
     return if no_harm?
     force_remove_file path
   end
 
   def rm_rf(path)
-    $stderr.puts "rm -rf #{path}" if verbose?
+    $stdout.puts "rm -rf #{path}" if verbose?
     return if no_harm?
     remove_tree path
   end
@@ -620,7 +620,7 @@ module FileOperations
   end
 
   def install(from, dest, mode, prefix = nil)
-    $stderr.puts "install #{from} #{dest}" if verbose?
+    $stdout.puts "install #{from} #{dest}" if verbose?
     return if no_harm?
 
     realdest = prefix ? prefix + File.expand_path(dest) : dest
@@ -651,7 +651,7 @@ module FileOperations
   end
 
   def command(*args)
-    $stderr.puts args.join(' ') if verbose?
+    $stdout.puts args.join(' ') if verbose?
     system(*args) or raise RuntimeError,
         "system(#{args.map{|a| a.inspect }.join(' ')}) failed"
   end
@@ -1130,7 +1130,7 @@ class ToplevelInstallerMulti < ToplevelInstaller
   def each_selected_installers
     Dir.mkdir 'packages' unless File.dir?('packages')
     @selected.each do |pack|
-      $stderr.puts "Processing the package `#{pack}' ..." if verbose?
+      $stdout.puts "Processing the package `#{pack}' ..." if verbose?
       Dir.mkdir "packages/#{pack}" unless File.dir?("packages/#{pack}")
       Dir.chdir "packages/#{pack}"
       yield @installers[pack]
@@ -1267,14 +1267,14 @@ class Installer
     return if config('shebang') == 'never'
     old = Shebang.load(path)
     if old
-      $stderr.puts "warning: #{path}: Shebang line includes too many args.  It is not portable and your program may not work." if old.args.size > 1
+      $stdout.puts "warning: #{path}: Shebang line includes too many args.  It is not portable and your program may not work." if old.args.size > 1
       new = new_shebang(old)
       return if new.to_s == old.to_s
     else
       return unless config('shebang') == 'all'
       new = Shebang.new(config('rubypath'))
     end
-    $stderr.puts "updating shebang: #{File.basename(path)}" if verbose?
+    $stdout.puts "updating shebang: #{File.basename(path)}" if verbose?
     open_atomic_writer(path) {|output|
       File.open(path, 'rb') {|f|
         f.gets if old   # discard
@@ -1453,10 +1453,10 @@ class Installer
 
   def exec_test
     unless File.directory?('test')
-      $stderr.puts 'no test in this package' if verbose?
+      $stdout.puts 'no test in this package' if verbose?
       return
     end
-    $stderr.puts 'Running tests...' if verbose?
+    $stdout.puts 'Running tests...' if verbose?
     begin
       require 'test/unit'
     rescue LoadError
@@ -1518,7 +1518,7 @@ class Installer
     run_hook "pre-#{task}"
     FILETYPES.each do |type|
       if type == 'ext' and config('without-ext') == 'yes'
-        $stderr.puts 'skipping ext/* by user option' if verbose?
+        $stdout.puts 'skipping ext/* by user option' if verbose?
         next
       end
       traverse task, type, "#{task}_dir_#{type}"
@@ -1544,11 +1544,11 @@ class Installer
     Dir.mkdir dir unless File.dir?(dir)
     prevdir = Dir.pwd
     Dir.chdir dir
-    $stderr.puts '---> ' + rel if verbose?
+    $stdout.puts '---> ' + rel if verbose?
     @currdir = rel
     yield
     Dir.chdir prevdir
-    $stderr.puts '<--- ' + rel if verbose?
+    $stdout.puts '<--- ' + rel if verbose?
     @currdir = File.dirname(rel)
   end
 

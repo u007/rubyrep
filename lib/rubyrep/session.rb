@@ -125,14 +125,13 @@ module RR
       unreachable = true
       Thread.new do
         begin
-          # $stderr.puts "testing database"
           if send(database) && send(database).select_one("select 1+1 as x")['x'].to_i == 2
-            # $stderr.puts "database reachable!"
+            # $stdout.puts "database reachable!"
             unreachable = false # database is actually reachable
           end
         end rescue nil
       end.join configuration.options[:database_connection_timeout]
-      # $stderr.puts "unreachable: #{unreachable}"
+      # $stdout.puts "unreachable: #{unreachable}"
       unreachable
     end
 
@@ -180,7 +179,7 @@ module RR
         # step 2: try to reconnect the database
         Thread.new do
           begin
-            # $stderr.puts "connecting to db"
+            # $stdout.puts "connecting to db"
             connect_database database
           rescue Exception => e
             $stderr.puts "connect error! #{e}"

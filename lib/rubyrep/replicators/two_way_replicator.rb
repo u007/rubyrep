@@ -315,22 +315,22 @@ module RR
         inserted = 0
         updated = 0
         deleted = 0
-        # $stderr.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{}"
+        # $stdout.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{}"
         raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0
-        # $stderr.puts "Replicating2 #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
+        # $stdout.puts "Replicating2 #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
         options = rep_helper.options_for_table(diff.changes[:left].table)
         if diff.type == :left or diff.type == :right
           key = diff.type == :left ? :left_change_handling : :right_change_handling
           option = options[key]
-          # $stderr.puts "Data #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{option}"
+          # $stdout.puts "Data #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{option}"
           if option == :ignore
-            $stderr.puts "Ignoring #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
+            $stdout.puts "Ignoring #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
             log_replication_outcome :ignore, diff
           elsif option == :replicate
             source_db = diff.type
 
             change = diff.changes[source_db]
-            $stderr.puts "Pushing #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
+            $stdout.puts "Pushing #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
 
             case change.type
             when :insert

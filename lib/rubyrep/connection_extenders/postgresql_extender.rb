@@ -31,6 +31,7 @@ module RR
 
       # Returns an ordered list of primary key column names of the given table
       def primary_key_names(table)
+        $stdout.puts("primary_key_names(#{table})")
         row = self.select_one(<<-end_sql)
           SELECT relname
           FROM pg_class
@@ -46,6 +47,9 @@ module RR
           WHERE cons.contype = 'p' AND rel.relname = '#{table}' AND rel.relnamespace IN
             (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         end_sql
+        if (row.nil?)
+          $stdout.puts("table '#{table}' constraints primary key")
+        end
         return [] if row.nil?
         column_parray = row['conkey']
         
@@ -56,7 +60,7 @@ module RR
         else
           column_ids = column_parray.sub(/^\{(.*)\}$/,'\1').split(',').map {|a| a.to_i}
         end
-
+        # $stdout.puts("getting sequential name: #{table}")
         columns = {}
         rows = self.select_all(<<-end_sql)
           SELECT attnum, attname
@@ -66,7 +70,7 @@ module RR
           WHERE cons.contype = 'p' AND rel.relname = '#{table}' AND rel.relnamespace IN
             (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         end_sql
-        $stderr.puts "column_ids: #{table}'.#{column_ids.inspect} results: #{rows.inspect}"
+        $stdout.puts "column_ids: #{table}'.#{column_ids.inspect} results: #{rows.inspect}"
         sorted_columns = []
         if not rows.nil?
           rows.each() {|r| columns[r['attnum'].to_i] = r['attname']}

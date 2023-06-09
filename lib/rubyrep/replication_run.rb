@@ -68,7 +68,7 @@ module RR
           ) != nil
         end
         t.join session.configuration.options[:database_connection_timeout]
-        $stderr.puts "changes_pending? #{changes_pending}"
+        $stdout.puts "changes_pending? #{changes_pending}"
         changes_pending
       end
       # Apparently sometimes above check for changes takes already so long, that
@@ -83,10 +83,10 @@ module RR
             diff = load_difference
             break unless diff.loaded?
             break if sweeper.terminated?
-            # $stderr.puts "Replicating diff: #{diff.type} filtered? #{event_filtered?(diff)}"
+            # $stdout.puts "Replicating diff: #{diff.type} filtered? #{event_filtered?(diff)}"
             if diff.type != :no_diff and not event_filtered?(diff)
               res = replicator.replicate_difference diff
-              $stderr.puts "Synced: #{res.inspect}"# if session.configuration.options[:verbose]
+              $stdout.puts "Synced: #{res.inspect}"# if session.configuration.options[:verbose]
             end
           rescue Exception => e
             $stderr.puts "Exception: #{e.message}, #{e.backtrace.inspect}"

@@ -93,7 +93,7 @@ EOS
         add_specific_options(opts)
 
         opts.on_tail("--help", "Show this message") do
-          $stderr.puts opts
+          $stdout.puts opts
           self.options = nil
         end
       end
@@ -105,8 +105,8 @@ EOS
           raise("Please specify configuration file") unless options.include?(:config_file)
         end
       rescue Exception => e
-        $stderr.puts "Command line parsing failed: #{e}"
-        $stderr.puts parser.help
+        $stdout.puts "Command line parsing failed: #{e}"
+        $stdout.puts parser.help
         self.options = nil
         status = 1
       end
