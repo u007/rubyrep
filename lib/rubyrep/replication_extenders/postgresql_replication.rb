@@ -192,7 +192,7 @@ module RR
           current_value = row['last_value'].to_i
           current_increment = next_value - current_value #row['increment_by'].to_i
           unless current_increment == increment and current_value % increment == offset
-            $stdout.puts "update_sequences: left: #{left_current_value.inspect}: #{right_sequence_values.inspect}"
+            $stdout.puts "update_sequences: #{sequence_name} left: #{left_current_value.inspect}: #{right_sequence_values.inspect}"
             max_current_value =
               [left_current_value[:value], right_sequence_values[sequence_name][:value]].max +
               adjustment_buffer
