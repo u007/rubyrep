@@ -272,7 +272,7 @@ module RR
       def attempt_change(action, source_db, target_db, diff, remaining_attempts)
         begin
           rep_helper.session.send(target_db).execute "savepoint rr_#{action}_#{remaining_attempts}"
-          $stdout.puts "Attempting #{action} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
+          # $stdout.puts "Attempting #{action} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
           # deprecated, dont need to set foreign key deferrable
           #   because by end of transaction, it will be enforced
           # TODO postgresql/mysql specific
@@ -320,8 +320,8 @@ module RR
         inserted = 0
         updated = 0
         deleted = 0
-        # $stdout.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' option: #{}"
-        raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0
+        raise Exception, previous_failure_description || "max replication attempts exceeded" if remaining_attempts == 0 ||previous_failure_description.include?("ForeignKeyViolation")
+        # $stdout.puts "Replicating #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}' last Error: #{previous_failure_description}"
         # $stdout.puts "Replicating2 #{diff.type} in table #{diff.changes[:left].table} for key '#{diff.changes[:left].key}'"
         options = rep_helper.options_for_table(diff.changes[:left].table)
         if diff.type == :left or diff.type == :right
